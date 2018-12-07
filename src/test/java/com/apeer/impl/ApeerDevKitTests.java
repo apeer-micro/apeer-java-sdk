@@ -1,10 +1,10 @@
 package com.apeer.impl;
 
-import com.apeer.internal.IFileOutput;
-import com.apeer.internal.ISystem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+
+import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -170,11 +170,11 @@ class ApeerDevKitTests {
         adk.setFileOutput("segmented-image", "path/to/file.png");
         adk.finalizeModule();
 
-        var captureSrc = ArgumentCaptor.forClass(String.class);
-        var captureDest = ArgumentCaptor.forClass(String.class);
+        var captureSrc = ArgumentCaptor.forClass(Path.class);
+        var captureDest = ArgumentCaptor.forClass(Path.class);
         verify(fileOutputMock).moveFile(captureSrc.capture(), captureDest.capture());
-        assertEquals("path/to/file.png", captureSrc.getValue());
-        assertEquals("/output/path/to/file.png", captureDest.getValue());
+        assertEquals(Path.of("path/to/file.png"), captureSrc.getValue());
+        assertEquals(Path.of("/output/path/to/file.png"), captureDest.getValue());
     }
 
     @Test
@@ -185,6 +185,6 @@ class ApeerDevKitTests {
         adk.setFileOutput("segmented-image", "/output/path/to/file.png");
         adk.finalizeModule();
 
-        verify(fileOutputMock, never()).moveFile(anyString(), anyString());
+        verify(fileOutputMock, never()).moveFile(any(), any());
     }
 }

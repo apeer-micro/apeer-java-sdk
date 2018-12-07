@@ -1,12 +1,10 @@
 package com.apeer.impl;
 
 import com.apeer.IApeerDevKit;
-import com.apeer.internal.IFileOutput;
-import com.apeer.internal.ISystem;
-import com.apeer.internal.OutputJsonFileWriter;
-import com.apeer.internal.SystemFacade;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.nio.file.Path;
 
 public class ApeerDevKit implements IApeerDevKit {
     private final ISystem system;
@@ -76,7 +74,7 @@ public class ApeerDevKit implements IApeerDevKit {
     public void setFileOutput(String key, String outputFilePath) throws ApeerOutputException {
         if (!outputFilePath.startsWith("/output/")) {
             var targetPath = "/output/" + outputFilePath;
-            fileOutputWriter.moveFile(outputFilePath, targetPath);
+            fileOutputWriter.moveFile(Path.of(outputFilePath), Path.of(targetPath));
             outputFilePath = targetPath;
         }
 
@@ -87,7 +85,7 @@ public class ApeerDevKit implements IApeerDevKit {
         }
     }
 
-    public void finalizeModule() {
+    public void finalizeModule() throws ApeerOutputException {
         var json = outputJson.toString();
         fileOutputWriter.writeTextToFile(outputParamsFile, json);
     }
