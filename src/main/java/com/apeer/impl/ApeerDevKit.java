@@ -1,27 +1,29 @@
 package com.apeer.impl;
 
 import com.apeer.IApeerDevKit;
+import com.apeer.internal.IFileWriter;
 import com.apeer.internal.ISystem;
+import com.apeer.internal.OutputJsonFileWriter;
 import com.apeer.internal.SystemFacade;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ApeerDevKit implements IApeerDevKit {
-    private ISystem _system = new SystemFacade();
+    private final ISystem _system;
+    private final IFileWriter _fileWriter;
 
     private JSONObject _inputJson;
+    private JSONObject _outputJson;
     private String _outputParamsFile;
 
-    public ApeerDevKit(ISystem system) throws ApeerEnvironmentException {
-        _system = system;
-        init();
-    }
-
     public ApeerDevKit() throws ApeerEnvironmentException {
-        init();
+        this(new SystemFacade(), new OutputJsonFileWriter());
     }
 
-    private void init() throws ApeerEnvironmentException {
+    ApeerDevKit(ISystem system, IFileWriter fileWriter) throws ApeerEnvironmentException {
+        _system = system;
+        _fileWriter = fileWriter;
+
         log("Initializing");
 
         var wfeInputJsonKey = "WFE_INPUT_JSON";
@@ -39,6 +41,8 @@ public class ApeerDevKit implements IApeerDevKit {
             throw new ApeerEnvironmentException("Could not decode \"" + wfeInputJsonKey + "\"", ex);
         }
 
+        _outputJson = new JSONObject();
+
         log("Successfully read \"" + wfeInputJsonKey + "\". Output params will be written to \"" + _outputParamsFile + "\"");
     }
 
@@ -49,28 +53,39 @@ public class ApeerDevKit implements IApeerDevKit {
         }
 
         if (type == String.class) {
-            return (T)_inputJson.getString(key);
+            return (T) _inputJson.getString(key);
         } else if (type == Integer.class || type == int.class) {
-            return (T)(Integer)_inputJson.getInt(key);
+            return (T) (Integer) _inputJson.getInt(key);
         } else if (type == Double.class || type == double.class) {
-            return (T)(Double)_inputJson.getDouble(key);
+            return (T) (Double) _inputJson.getDouble(key);
         } else if (type == Boolean.class || type == boolean.class) {
-            return (T)(Boolean)_inputJson.getBoolean(key);
+            return (T) (Boolean) _inputJson.getBoolean(key);
         } else {
             throw new ApeerInputException("Input type \"" + type.toString() + "\" is not allowed. Use String, Integer, Double or Boolean");
         }
     }
 
-    public void setOutput() {
-
+    public void setOutput(String key, Object value) throws ApeerOutputException {
+        try {
+            _outputJson.put(key, value);
+        } catch (JSONException ex) {
+            throw new ApeerOutputException("Could not set output \"" + key + "\"", ex);
+        }
     }
 
-    public void setFileOutput() {
+    public void setFileOutput(String key, Object value) throws ApeerOutputException {
+        // TODO move file to /output
 
+        try {
+            _outputJson.put(key, value);
+        } catch (JSONException ex) {
+            throw new ApeerOutputException("Could not set output \"" + key + "\"", ex);
+        }
     }
 
-    public void finalizeADK() {
-
+    public void finalizeModule() {
+        var json = _outputJson.toString();
+        _fileWriter.writeTextToFile(_outputParamsFile, json);
     }
 
     private void log(String message) {
