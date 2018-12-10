@@ -4,7 +4,10 @@ import com.apeer.IApeerDevKit;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ApeerDevKit implements IApeerDevKit {
     private final ISystem system;
@@ -44,11 +47,10 @@ public class ApeerDevKit implements IApeerDevKit {
      * Initializes the ADK and reads-in the WFE_INPUT_JSON. <b>NOTE</b> You must call {@code finalizeModule()} after all
      * all other operations on this class
      *
-     * @throws ApeerEnvironmentException
-     *              When the WFE_INPUT_JSON environment variable could either
-     *                  - not be found or
-     *                  - it's value is not a valid JSON or
-     *                  - it does not contain "output_params_file"
+     * @throws ApeerEnvironmentException When the WFE_INPUT_JSON environment variable could either
+     *                                   - not be found or
+     *                                   - it's value is not a valid JSON or
+     *                                   - it does not contain "output_params_file"
      */
     public ApeerDevKit() throws ApeerEnvironmentException {
         this(new SystemFacade(), new OutputJsonFileWriter());
@@ -57,18 +59,14 @@ public class ApeerDevKit implements IApeerDevKit {
     /**
      * Gets the input from the WFE_INPUT_JSON environment variable
      *
-     * @param key
-     *              The input key as defined in the module_specification.json of your module
-     * @param type
-     *              The type of the input as defined in the module_specification.json of your module
-     * @param <T>
-     *              One of:
-     *              String.class, Integer.class, int.class, Double.class, double.class, Boolean.class, bool.class
-     * @return
-     *              The value associated with the key as given by the WFE_INPUT_JSON environment variable
-     * @throws ApeerInputException
-     *              When key could not be found or type is not supported
+     * @param key  The input key as defined in the module_specification.json of your module
+     * @param type The type of the input as defined in the module_specification.json of your module
+     * @param <T>  One of (all are possible as array types):
+     *             String.class, Integer.class, int.class, Double.class, double.class, Boolean.class, bool.class
+     * @return The value associated with the key as given by the WFE_INPUT_JSON environment variable
+     * @throws ApeerInputException When key could not be found or type is not supported
      */
+    @SuppressWarnings("unchecked")
     public <T> T getInput(String key, Class<T> type) throws ApeerInputException {
         if (!inputJson.has(key)) {
             throw new ApeerInputException("Could not find key \"" + key + "\" in inputs");
@@ -82,6 +80,13 @@ public class ApeerDevKit implements IApeerDevKit {
             return (T) (Double) inputJson.getDouble(key);
         } else if (type == Boolean.class || type == boolean.class) {
             return (T) (Boolean) inputJson.getBoolean(key);
+        } else if (type.isArray()) {
+            var jsonItems = inputJson.getJSONArray(key);
+            T items = (T) Array.newInstance(type.getComponentType(), jsonItems.length());
+            for (int i = 0; i < jsonItems.length(); i++) {
+                Array.set(items, i, jsonItems.get(i));
+            }
+            return items;
         } else {
             throw new ApeerInputException("Input type \"" + type.toString() + "\" is not allowed. Use String, Integer, Double or Boolean");
         }
@@ -90,13 +95,10 @@ public class ApeerDevKit implements IApeerDevKit {
     /**
      * Sets the output that will be written to output_params_file
      *
-     * @param key
-     *              The output key as defined in the module_specification.json of your module
-     * @param value
-     *              The value that will be written to the associated key. Can be any type that is supported by JSON but
+     * @param key   The output key as defined in the module_specification.json of your module
+     * @param value The value that will be written to the associated key. Can be any type that is supported by JSON but
      *              must correspond to the type as specified in the module_specification.json of your module
-     * @throws ApeerOutputException
-     *              When the value could not be parsed to JSON
+     * @throws ApeerOutputException When the value could not be parsed to JSON
      */
     public void setOutput(String key, Object value) throws ApeerOutputException {
         try {
@@ -110,12 +112,9 @@ public class ApeerDevKit implements IApeerDevKit {
      * Sets a file output that will be written to output_params_file. Also copies the file to the output folder of your
      * module as required by the APEER environment
      *
-     * @param key
-     *              The output key as defined in the module_specification.json of your module
-     * @param outputFilePath
-     *              The relative path to your file as you saved it
-     * @throws ApeerOutputException
-     *              When the value could not be parsed to JSON
+     * @param key            The output key as defined in the module_specification.json of your module
+     * @param outputFilePath The relative path to your file as you saved it
+     * @throws ApeerOutputException When the value could not be parsed to JSON
      */
     public void setFileOutput(String key, String outputFilePath) throws ApeerOutputException {
         if (!outputFilePath.startsWith("/output/")) {
@@ -134,8 +133,7 @@ public class ApeerDevKit implements IApeerDevKit {
     /**
      * Writes all output values as defined via {@code setOutput} and {@code setFileOutput} to the output params file
      *
-     * @throws ApeerOutputException
-     *              When the output params file could not be written
+     * @throws ApeerOutputException When the output params file could not be written
      */
     public void finalizeModule() throws ApeerOutputException {
         var json = outputJson.toString();

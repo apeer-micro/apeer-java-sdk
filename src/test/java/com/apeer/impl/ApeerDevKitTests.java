@@ -110,6 +110,24 @@ class ApeerDevKitTests {
         assertEquals("Hello ZEISS", input);
     }
 
+    @Test
+    void getInput_returnsStringArrayFromInputs() throws ApeerEnvironmentException, ApeerInputException {
+        when(systemMock.getenv("WFE_INPUT_JSON"))
+                .thenReturn("{\"output_params_file\":\"out.json\",\"strings\":[\"Hello ZEISS\",\"Hello World\"]}");
+        var adk = new ApeerDevKit(systemMock, fileOutputMock);
+        var input = adk.getInput("strings", String[].class);
+        assertArrayEquals(new String[]{"Hello ZEISS", "Hello World"}, input);
+    }
+
+    @Test
+    void getInput_returnsNumberArrayFromInputs() throws ApeerEnvironmentException, ApeerInputException {
+        when(systemMock.getenv("WFE_INPUT_JSON"))
+                .thenReturn("{\"output_params_file\":\"out.json\",\"numbers\":[42,47.11]}");
+        var adk = new ApeerDevKit(systemMock, fileOutputMock);
+        var input = adk.getInput("numbers", double[].class);
+        assertArrayEquals(new double[]{42, 47.11}, input, Double.MIN_VALUE);
+    }
+
     /*
      * outputs
      */
@@ -156,6 +174,19 @@ class ApeerDevKitTests {
         verify(fileOutputMock).writeTextToFile(anyString(), capture.capture());
         assertTrue(capture.getValue().contains("\"key_true\":true"));
         assertTrue(capture.getValue().contains("\"key_false\":false"));
+    }
+
+    @Test
+    void encodesArrayOutputsToJson() throws ApeerEnvironmentException, ApeerOutputException {
+        when(systemMock.getenv("WFE_INPUT_JSON")).thenReturn("{\"output_params_file\":\"out.json\"}");
+        var adk = new ApeerDevKit(systemMock, fileOutputMock);
+
+        adk.setOutput("key_string_array", new String[]{"value1", "value2", "value3"});
+        adk.finalizeModule();
+
+        var capture = ArgumentCaptor.forClass(String.class);
+        verify(fileOutputMock).writeTextToFile(anyString(), capture.capture());
+        assertTrue(capture.getValue().contains("\"key_string_array\":[\"value1\",\"value2\",\"value3\"]"));
     }
 
     /*
