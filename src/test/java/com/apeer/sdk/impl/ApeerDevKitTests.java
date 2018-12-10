@@ -190,7 +190,7 @@ class ApeerDevKitTests {
     }
 
     /*
-     * file outputs
+     * single file outputs
      */
 
     @Test
@@ -203,9 +203,12 @@ class ApeerDevKitTests {
 
         var captureSrc = ArgumentCaptor.forClass(Path.class);
         var captureDest = ArgumentCaptor.forClass(Path.class);
+        var captureOutput = ArgumentCaptor.forClass(String.class);
         verify(fileOutputMock).moveFile(captureSrc.capture(), captureDest.capture());
+        verify(fileOutputMock).writeTextToFile(anyString(), captureOutput.capture());
         assertEquals(Path.of("path/to/file.png"), captureSrc.getValue());
         assertEquals(Path.of("/output/path/to/file.png"), captureDest.getValue());
+        assertEquals("{\"segmented-image\":\"/output/path/to/file.png\"}", captureOutput.getValue());
     }
 
     @Test
@@ -217,5 +220,31 @@ class ApeerDevKitTests {
         adk.finalizeModule();
 
         verify(fileOutputMock, never()).moveFile(any(), any());
+    }
+
+    /*
+     * multi file outputs
+     */
+
+    @Test
+    void movesFilesToOutputFolder() throws ApeerOutputException, ApeerEnvironmentException {
+        when(systemMock.getenv("WFE_INPUT_JSON")).thenReturn("{\"output_params_file\":\"out.json\"}");
+        var adk = new ApeerDevKit(systemMock, fileOutputMock);
+
+        adk.setFileOutput("segmented-images", new String[]{"path/to/file1.png", "path/to/file2.png"});
+        adk.finalizeModule();
+
+        var captureSrc = ArgumentCaptor.forClass(Path.class);
+        var captureDest = ArgumentCaptor.forClass(Path.class);
+        var captureOutput = ArgumentCaptor.forClass(String.class);
+        verify(fileOutputMock, times(2)).moveFile(captureSrc.capture(), captureDest.capture());
+        verify(fileOutputMock).writeTextToFile(anyString(), captureOutput.capture());
+        assertEquals(Path.of("path/to/file1.png"), captureSrc.getAllValues().get(0));
+        assertEquals(Path.of("path/to/file2.png"), captureSrc.getAllValues().get(1));
+        assertEquals(Path.of("/output/path/to/file1.png"), captureDest.getAllValues().get(0));
+        assertEquals(Path.of("/output/path/to/file2.png"), captureDest.getAllValues().get(1));
+        assertEquals(
+                "{\"segmented-images\":[\"/output/path/to/file1.png\",\"/output/path/to/file2.png\"]}",
+                captureOutput.getValue());
     }
 }

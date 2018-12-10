@@ -129,6 +129,28 @@ public class ApeerDevKit implements IApeerDevKit {
     }
 
     /**
+     * Sets multiple file outputs that will be written to output_params_file. Also copies the files to the output folder
+     * of your module as required by the APEER environment
+     *
+     * @param key             The output key as defined in the module_specification.json of your module
+     * @param outputFilePaths The relative paths to your files as you saved them
+     * @throws ApeerOutputException When the value could not be parsed to JSON
+     */
+    public void setFileOutput(String key, String[] outputFilePaths) throws ApeerOutputException {
+        var targetFilePaths = new String[outputFilePaths.length];
+        for (int i = 0; i < outputFilePaths.length; i++) {
+            var filePath = outputFilePaths[i];
+            if (!filePath.startsWith("/output/")) {
+                var targetPath = "/output/" + filePath;
+                fileOutputWriter.moveFile(Path.of(filePath), Path.of(targetPath));
+                targetFilePaths[i] = targetPath;
+            }
+        }
+
+        setOutput(key, targetFilePaths);
+    }
+
+    /**
      * Writes all output values as defined via {@code setOutput} and {@code setFileOutput} to the output params file
      *
      * @throws ApeerOutputException When the output params file could not be written
