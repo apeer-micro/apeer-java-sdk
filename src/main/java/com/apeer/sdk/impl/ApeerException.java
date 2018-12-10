@@ -1,4 +1,4 @@
-package com.apeer.impl;
+package com.apeer.sdk.impl;
 
 class ApeerException extends Exception {
     ApeerException(String message) {

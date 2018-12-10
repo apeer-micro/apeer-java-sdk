@@ -1,4 +1,4 @@
-package com.apeer.impl;
+package com.apeer.sdk.impl;
 
 import org.apache.commons.lang3.Validate;
 
@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class OutputJsonFileWriter implements IFileOutput {
+class OutputJsonFileWriter implements IFileOutput {
     @Override
     public void writeTextToFile(String filePath, String text)  throws ApeerOutputException {
         Validate.notNull(filePath);

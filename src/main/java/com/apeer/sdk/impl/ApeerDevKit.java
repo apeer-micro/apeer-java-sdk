@@ -1,13 +1,11 @@
-package com.apeer.impl;
+package com.apeer.sdk.impl;
 
-import com.apeer.IApeerDevKit;
+import com.apeer.sdk.IApeerDevKit;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Array;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ApeerDevKit implements IApeerDevKit {
     private final ISystem system;

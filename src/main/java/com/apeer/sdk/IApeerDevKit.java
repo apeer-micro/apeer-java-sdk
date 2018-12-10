@@ -1,7 +1,7 @@
-package com.apeer;
+package com.apeer.sdk;
 
-import com.apeer.impl.ApeerInputException;
-import com.apeer.impl.ApeerOutputException;
+import com.apeer.sdk.impl.ApeerInputException;
+import com.apeer.sdk.impl.ApeerOutputException;
 
 public interface IApeerDevKit {
     <T> T getInput(String key, Class<T> type) throws ApeerInputException;

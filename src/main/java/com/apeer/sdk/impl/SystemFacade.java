@@ -1,6 +1,6 @@
-package com.apeer.impl;
+package com.apeer.sdk.impl;
 
-public class SystemFacade implements ISystem {
+class SystemFacade implements ISystem {
     @Override
     public String getenv(String key) {
         return System.getenv(key);
