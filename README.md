@@ -6,7 +6,15 @@ Our APEER Java SDK aka. apeer-dev-kit (ADK) is a Java package for reading inputs
 
 ## Installation
 
-`TODO add maven doc`
+Add the apeer-dev-kit as dependency to your pom.xml in your maven project
+
+```xml
+<dependency>
+  <groupId>com.apeer</groupId>
+  <artifactId>apeer-dev-kit</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
 
 ## How to Use
 
