@@ -1,8 +1,11 @@
 package com.apeer.sdk.sample;
 
-import com.apeer.sdk.impl.*;
+import com.apeer.sdk.ApeerDevKit;
+import com.apeer.sdk.ApeerEnvironmentException;
+import com.apeer.sdk.ApeerInputException;
+import com.apeer.sdk.ApeerOutputException;
 
-public class apeer_main {
+public class ApeerMain {
     public static void main(String[] args) {
         try {
             var adk = new ApeerDevKit();
@@ -11,7 +14,7 @@ public class apeer_main {
             var threshold = adk.getInput("threshold", int.class);
             var methodName = adk.getInput("method", String.class);
 
-            var outputs = new your_code().run(inputImage, threshold, methodName);
+            var outputs = new YourCode().run(inputImage, threshold, methodName);
 
             adk.setOutput("some_output", outputs.get("some_other_result_value"));
             adk.setFileOutput("output_image", (String)outputs.get("output_image"));

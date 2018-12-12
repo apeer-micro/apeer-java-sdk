@@ -1,4 +1,4 @@
-package com.apeer.sdk.impl;
+package com.apeer.sdk;
 
 public class ApeerEnvironmentException extends ApeerException {
     ApeerEnvironmentException(String message) {

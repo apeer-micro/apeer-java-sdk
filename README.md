@@ -14,7 +14,7 @@ Your code (your_code.java) can be in it's separate package and run totally indep
 
 ```java
 /*
- * apeer_main.java
+ * ApeerMain.java
  */
  
 var adk = new ApeerDevKit();
@@ -30,7 +30,7 @@ adk.finalizeModule();
  
  
 /*
- * your_code.java
+ * YourCode.java
  */
  
 public class your_code {

@@ -3,7 +3,7 @@ package com.apeer.sdk.sample;
 import java.util.HashMap;
 import java.util.Map;
 
-public class your_code {
+public class YourCode {
     public Map<String, Object> run(String inputImagePath, int threshold, String method) {
         System.out.println("Reading input image " + inputImagePath);
         System.out.println("Using threshold     " + threshold);

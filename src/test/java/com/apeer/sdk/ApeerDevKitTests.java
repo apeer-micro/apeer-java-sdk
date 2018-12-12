@@ -1,4 +1,4 @@
-package com.apeer.sdk.impl;
+package com.apeer.sdk;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
