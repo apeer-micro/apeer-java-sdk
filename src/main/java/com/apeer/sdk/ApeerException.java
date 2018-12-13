@@ -1,11 +1,11 @@
 package com.apeer.sdk;
 
-class ApeerException extends Exception {
-    ApeerException(String message) {
+public class ApeerException extends Exception {
+    public ApeerException(String message) {
         super("[ADK] " + message);
     }
 
-    ApeerException(String message, Exception inner) {
+    public ApeerException(String message, Exception inner) {
         super("[ADK] " + message, inner);
     }
 }
