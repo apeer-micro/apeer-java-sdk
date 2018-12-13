@@ -1,4 +1,6 @@
 # APEER Java SDK
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.apeer/apeer-dev-kit/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.apeer/apeer-dev-kit)
+[![License](https://img.shields.io/badge/Code%20License-MIT-blue.svg)](https://github.com/apeer-micro/apeer-python-sdk/blob/master/LICENSE.txt)
 
 ## What it does
 
