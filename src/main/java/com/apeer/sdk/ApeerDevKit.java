@@ -156,7 +156,7 @@ public class ApeerDevKit {
      */
     public void finalizeModule() throws ApeerOutputException {
         var json = outputJson.toString();
-        fileOutputWriter.writeTextToFile(outputParamsFile, json);
+        fileOutputWriter.writeTextToFile("/output/" + outputParamsFile, json);
     }
 
     private void log(String message) {
