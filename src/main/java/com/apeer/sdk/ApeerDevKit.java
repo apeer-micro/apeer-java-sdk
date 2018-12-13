@@ -30,7 +30,7 @@ public class ApeerDevKit {
 
         try {
             inputJson = new JSONObject(wfe_input_json);
-            outputParamsFile = inputJson.getString("output_params_file");
+            outputParamsFile = inputJson.getString("WFE_output_params_file");
         } catch (JSONException ex) {
             throw new ApeerEnvironmentException("Could not decode \"" + wfeInputJsonKey + "\"", ex);
         }
