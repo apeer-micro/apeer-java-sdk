@@ -14,7 +14,7 @@ Add the apeer-dev-kit as dependency to your pom.xml in your maven project
 <dependency>
   <groupId>com.apeer</groupId>
   <artifactId>apeer-dev-kit</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.4</version>
 </dependency>
 ```
 
