@@ -1,3 +1,2 @@
 language: java
-script:
-  - sudo /usr/local/maven/bin/mvn clean package
+script: mvn test -e
