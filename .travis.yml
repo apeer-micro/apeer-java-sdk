@@ -1,2 +1,4 @@
 language: java
-script: mvn test -e
+script: 
+   - sudo mvn clean package
+   - sudo mvn install
