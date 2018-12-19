@@ -1,4 +1,5 @@
 language: java
 script: 
+   - mvn --version
    - sudo mvn clean package
    - sudo mvn install
