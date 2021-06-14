@@ -47,8 +47,9 @@ class ApeerDevKitTests {
 
     @Test
     void ctor_initializesWhenWfeInputJsonIsValid() throws ApeerEnvironmentException {
-        when(systemMock.getenv("WFE_INPUT_JSON")).thenReturn("{\"output_params_file\":\"out.json\"}");
-        new ApeerDevKit(systemMock, fileOutputMock);
+        when(systemMock.getenv("WFE_INPUT_JSON")).thenReturn("{\"WFE_output_params_file\":\"out.json\"}");
+        //noinspection ObviousNullCheck
+        assertNotNull(new ApeerDevKit(systemMock, fileOutputMock));
     }
 
     /*
@@ -57,7 +58,7 @@ class ApeerDevKitTests {
 
     @Test
     void getInput_throwsExceptionWhenKeyIsNotInInputs() throws ApeerEnvironmentException {
-        when(systemMock.getenv("WFE_INPUT_JSON")).thenReturn("{\"output_params_file\":\"out.json\"}");
+        when(systemMock.getenv("WFE_INPUT_JSON")).thenReturn("{\"WFE_output_params_file\":\"out.json\"}");
         var adk = new ApeerDevKit(systemMock, fileOutputMock);
         assertThrows(
                 ApeerInputException.class,
@@ -67,7 +68,7 @@ class ApeerDevKitTests {
     @Test
     void getInput_throwsExceptionWhenTypeIsNotValidInput() throws ApeerEnvironmentException {
         when(systemMock.getenv("WFE_INPUT_JSON"))
-                .thenReturn("{\"output_params_file\":\"out.json\",\"some-key\":42}");
+                .thenReturn("{\"WFE_output_params_file\":\"out.json\",\"some-key\":42}");
         var adk = new ApeerDevKit(systemMock, fileOutputMock);
         assertThrows(
                 ApeerInputException.class,
@@ -77,7 +78,7 @@ class ApeerDevKitTests {
     @Test
     void getInput_returnsIntegerFromInputs() throws ApeerEnvironmentException, ApeerInputException {
         when(systemMock.getenv("WFE_INPUT_JSON"))
-                .thenReturn("{\"output_params_file\":\"out.json\",\"integerValue\":42}");
+                .thenReturn("{\"WFE_output_params_file\":\"out.json\",\"integerValue\":42}");
         var adk = new ApeerDevKit(systemMock, fileOutputMock);
         var input = adk.getInput("integerValue", int.class);
         assertEquals(42, input, 1);
@@ -86,7 +87,7 @@ class ApeerDevKitTests {
     @Test
     void getInput_returnsDoubleFromInputs() throws ApeerEnvironmentException, ApeerInputException {
         when(systemMock.getenv("WFE_INPUT_JSON"))
-                .thenReturn("{\"output_params_file\":\"out.json\",\"doubleValue\":42.01}");
+                .thenReturn("{\"WFE_output_params_file\":\"out.json\",\"doubleValue\":42.01}");
         var adk = new ApeerDevKit(systemMock, fileOutputMock);
         var input = adk.getInput("doubleValue", double.class);
         assertEquals(42.01, input, Double.MIN_VALUE);
@@ -95,7 +96,7 @@ class ApeerDevKitTests {
     @Test
     void getInput_returnsBooleanFromInputs() throws ApeerEnvironmentException, ApeerInputException {
         when(systemMock.getenv("WFE_INPUT_JSON"))
-                .thenReturn("{\"output_params_file\":\"out.json\",\"boolValue\":true}");
+                .thenReturn("{\"WFE_output_params_file\":\"out.json\",\"boolValue\":true}");
         var adk = new ApeerDevKit(systemMock, fileOutputMock);
         var input = adk.getInput("boolValue", boolean.class);
         assertEquals(true, input);
@@ -104,7 +105,7 @@ class ApeerDevKitTests {
     @Test
     void getInput_returnsStringFromInputs() throws ApeerEnvironmentException, ApeerInputException {
         when(systemMock.getenv("WFE_INPUT_JSON"))
-                .thenReturn("{\"output_params_file\":\"out.json\",\"stringValue\":\"Hello ZEISS\"}");
+                .thenReturn("{\"WFE_output_params_file\":\"out.json\",\"stringValue\":\"Hello ZEISS\"}");
         var adk = new ApeerDevKit(systemMock, fileOutputMock);
         var input = adk.getInput("stringValue", String.class);
         assertEquals("Hello ZEISS", input);
@@ -113,7 +114,7 @@ class ApeerDevKitTests {
     @Test
     void getInput_returnsStringArrayFromInputs() throws ApeerEnvironmentException, ApeerInputException {
         when(systemMock.getenv("WFE_INPUT_JSON"))
-                .thenReturn("{\"output_params_file\":\"out.json\",\"strings\":[\"Hello ZEISS\",\"Hello World\"]}");
+                .thenReturn("{\"WFE_output_params_file\":\"out.json\",\"strings\":[\"Hello ZEISS\",\"Hello World\"]}");
         var adk = new ApeerDevKit(systemMock, fileOutputMock);
         var input = adk.getInput("strings", String[].class);
         assertArrayEquals(new String[]{"Hello ZEISS", "Hello World"}, input);
@@ -122,7 +123,7 @@ class ApeerDevKitTests {
     @Test
     void getInput_returnsNumberArrayFromInputs() throws ApeerEnvironmentException, ApeerInputException {
         when(systemMock.getenv("WFE_INPUT_JSON"))
-                .thenReturn("{\"output_params_file\":\"out.json\",\"numbers\":[42,47.11]}");
+                .thenReturn("{\"WFE_output_params_file\":\"out.json\",\"numbers\":[42,47.11]}");
         var adk = new ApeerDevKit(systemMock, fileOutputMock);
         var input = adk.getInput("numbers", double[].class);
         assertArrayEquals(new double[]{42, 47.11}, input, Double.MIN_VALUE);
@@ -134,19 +135,19 @@ class ApeerDevKitTests {
 
     @Test
     void encodesStringOutputsToJson() throws ApeerEnvironmentException, ApeerOutputException {
-        when(systemMock.getenv("WFE_INPUT_JSON")).thenReturn("{\"output_params_file\":\"out.json\"}");
+        when(systemMock.getenv("WFE_INPUT_JSON")).thenReturn("{\"WFE_output_params_file\":\"out.json\"}");
         var adk = new ApeerDevKit(systemMock, fileOutputMock);
 
         adk.setOutput("key_one", "value_one");
         adk.finalizeModule();
 
         var expectedJson = "{\"key_one\":\"value_one\"}";
-        verify(fileOutputMock).writeTextToFile("out.json", expectedJson);
+        verify(fileOutputMock).writeTextToFile("/output/out.json", expectedJson);
     }
 
     @Test
     void encodesNumberOutputsToJson() throws ApeerEnvironmentException, ApeerOutputException {
-        when(systemMock.getenv("WFE_INPUT_JSON")).thenReturn("{\"output_params_file\":\"out.json\"}");
+        when(systemMock.getenv("WFE_INPUT_JSON")).thenReturn("{\"WFE_output_params_file\":\"out.json\"}");
         var adk = new ApeerDevKit(systemMock, fileOutputMock);
 
         adk.setOutput("key_one", 42);
@@ -163,7 +164,7 @@ class ApeerDevKitTests {
 
     @Test
     void encodesBooleanOutputsToJson() throws ApeerEnvironmentException, ApeerOutputException {
-        when(systemMock.getenv("WFE_INPUT_JSON")).thenReturn("{\"output_params_file\":\"out.json\"}");
+        when(systemMock.getenv("WFE_INPUT_JSON")).thenReturn("{\"WFE_output_params_file\":\"out.json\"}");
         var adk = new ApeerDevKit(systemMock, fileOutputMock);
 
         adk.setOutput("key_true", true);
@@ -178,7 +179,7 @@ class ApeerDevKitTests {
 
     @Test
     void encodesArrayOutputsToJson() throws ApeerEnvironmentException, ApeerOutputException {
-        when(systemMock.getenv("WFE_INPUT_JSON")).thenReturn("{\"output_params_file\":\"out.json\"}");
+        when(systemMock.getenv("WFE_INPUT_JSON")).thenReturn("{\"WFE_output_params_file\":\"out.json\"}");
         var adk = new ApeerDevKit(systemMock, fileOutputMock);
 
         adk.setOutput("key_string_array", new String[]{"value1", "value2", "value3"});
@@ -195,7 +196,7 @@ class ApeerDevKitTests {
 
     @Test
     void movesFileToOutputFolder() throws ApeerOutputException, ApeerEnvironmentException {
-        when(systemMock.getenv("WFE_INPUT_JSON")).thenReturn("{\"output_params_file\":\"out.json\"}");
+        when(systemMock.getenv("WFE_INPUT_JSON")).thenReturn("{\"WFE_output_params_file\":\"out.json\"}");
         var adk = new ApeerDevKit(systemMock, fileOutputMock);
 
         adk.setFileOutput("segmented-image", "path/to/file.png");
@@ -213,7 +214,7 @@ class ApeerDevKitTests {
 
     @Test
     void doesNotMoveFileToOutputFolderWhenFileAlreadyThere() throws ApeerOutputException, ApeerEnvironmentException {
-        when(systemMock.getenv("WFE_INPUT_JSON")).thenReturn("{\"output_params_file\":\"out.json\"}");
+        when(systemMock.getenv("WFE_INPUT_JSON")).thenReturn("{\"WFE_output_params_file\":\"out.json\"}");
         var adk = new ApeerDevKit(systemMock, fileOutputMock);
 
         adk.setFileOutput("segmented-image", "/output/path/to/file.png");
@@ -228,7 +229,7 @@ class ApeerDevKitTests {
 
     @Test
     void movesFilesToOutputFolder() throws ApeerOutputException, ApeerEnvironmentException {
-        when(systemMock.getenv("WFE_INPUT_JSON")).thenReturn("{\"output_params_file\":\"out.json\"}");
+        when(systemMock.getenv("WFE_INPUT_JSON")).thenReturn("{\"WFE_output_params_file\":\"out.json\"}");
         var adk = new ApeerDevKit(systemMock, fileOutputMock);
 
         adk.setFileOutput("segmented-images", new String[]{"path/to/file1.png", "path/to/file2.png"});
@@ -246,5 +247,19 @@ class ApeerDevKitTests {
         assertEquals(
                 "{\"segmented-images\":[\"/output/path/to/file1.png\",\"/output/path/to/file2.png\"]}",
                 captureOutput.getValue());
+    }
+
+    @Test
+    void movesFilesWithOutputInPathToOutputFolder() throws ApeerOutputException, ApeerEnvironmentException {
+        when(systemMock.getenv("WFE_INPUT_JSON")).thenReturn("{\"WFE_output_params_file\":\"out.json\"}");
+        var adk = new ApeerDevKit(systemMock, fileOutputMock);
+        var expectedOutputFile = "{\"segmented-images\":[\"/output/path/to/file1.png\",\"/output/path/to/file2.png\"]}";
+        adk.setFileOutput("segmented-images", new String[]{"/output/path/to/file1.png", "/output/path/to/file2.png"});
+        adk.finalizeModule();
+
+        var captureOutput = ArgumentCaptor.forClass(String.class);
+        verify(fileOutputMock, never()).moveFile(any(), any());
+        verify(fileOutputMock).writeTextToFile(anyString(), captureOutput.capture());
+        assertEquals(expectedOutputFile, captureOutput.getAllValues().get(0));
     }
 }
